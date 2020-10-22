@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Covid 19 API</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</head>
+
+<body onload="fetch()">
+  <section id="title">
+    <div class="container-fluid navb">
+      <!-- Nav Bar -->
+      <nav class="navbar  navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="">Covid19</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#world">World</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#states">States</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      </div>
+  </section>
+  <section id="home">
+    <div class="container">
+      <h1 class="text-center mt-5">Covid 19 cases in the world</h1>
+      <h3 class="text-center text-uppercase">go corona go!!</h3>
+      <br /> <br />
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Total Cases</th>
+            <th>Total Deaths</th>
+            <th>Total Recovered</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="data">
+
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <center>
+        <button onclick="refreshData()" class="btn btn-danger btn-block" style="width:25%">Refresh Data</button>
+      </center>
+    </div>
+  </section>
+  <br /> <br />
+  <section id="world" class="container-fluid">
+    <div class="mb-3">
+      <h3 class="text-center text-uppercase">covid 19 live updates of the world</h3>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped text-center" id="tbval">
+        <tr>
+          <th>Country</th>
+          <th>Total Confirmed</th>
+          <th>Total Recovered</th>
+          <th>Total Deaths</th>
+          <th>New Confirmed</th>
+          <th>New Recovered</th>
+          <th>New Deaths</th>
+        </tr>
+      </table>
+    </div>
+  </section>
+  <br> <br>
+  <section id="states" class="container-fluid">
+    <div class="mb-3">
+      <h3 class="text-center text-uppercase">covid 19 live updates of the india</h3>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped text-center" id="tbstate">
+        <tr>
+          <th>State</th>
+          <th>Confirmed</th>
+          <th>Active</th>
+          <th>Recovered</th>
+          <th>Deaths</th>
+        </tr>
+      </table>
+    </div>
+  </section>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  init()
+
+  function init() {
+    var url = "https://api.covid19api.com/summary"
+    var data = ''
+    $.get(url, function(data) {
+      console.log(data.Global)
+      data = `
+          <td>${data.Global.TotalConfirmed}</td>
+          <td>${data.Global.TotalDeaths}</td>
+          <td>${data.Global.TotalRecovered}</td>
+          `
+      $("#data").html(data)
+    })
+  }
+
+  function refreshData() {
+    clearData()
+    init()
+  }
+
+  function clearData() {
+    $("#data").empty()
+  }
+
+  function fetch() {
+    fetchCountries();
+    fetchStates();
+  }
+
+  function fetchCountries() {
+    $.get("https://api.covid19api.com/summary", function(data) {
+      var tbval = document.getElementById("tbval");
+      for (var i = 1; i <= (data['Countries'].length); i++) {
+        var x = tbval.insertRow();
+        x.insertCell(0);
+        tbval.rows[i].cells[0].innerHTML = data['Countries'][i - 1]['Country'];
+        tbval.rows[i].cells[0].style.background = '#7a4a91';
+        tbval.rows[i].cells[0].style.color = '#fff';
+
+        x.insertCell(1);
+        tbval.rows[i].cells[1].innerHTML = data['Countries'][i - 1]['TotalConfirmed'];
+        tbval.rows[i].cells[1].style.background = '#4bb7d8';
+
+        x.insertCell(2);
+        tbval.rows[i].cells[2].innerHTML = data['Countries'][i - 1]['TotalRecovered'];
+        tbval.rows[i].cells[2].style.background = '#f36e23';
+
+        x.insertCell(3);
+        tbval.rows[i].cells[3].innerHTML = data['Countries'][i - 1]['TotalDeaths'];
+        tbval.rows[i].cells[3].style.background = '#4bb7d8';
+
+        x.insertCell(4);
+        tbval.rows[i].cells[4].innerHTML = data['Countries'][i - 1]['NewConfirmed'];
+        tbval.rows[i].cells[4].style.background = '#9cc850';
+
+        x.insertCell(5);
+        tbval.rows[i].cells[5].innerHTML = data['Countries'][i - 1]['NewRecovered'];
+        tbval.rows[i].cells[5].style.background = '#f36e23';
+
+        x.insertCell(6);
+        tbval.rows[i].cells[6].innerHTML = data['Countries'][i - 1]['NewDeaths'];
+        tbval.rows[i].cells[6].style.background = '#9cc850';
+      }
+    })
+  }
+
+  function fetchStates() {
+    $.get("https://api.covid19india.org/data.json", function(data) {
+      var tbstate = document.getElementById("tbstate");
+      console.log(data['statewise'].length)
+      for (var i = 1; i <= (data['statewise'].length); i++) {
+        var x = tbstate.insertRow();
+        x.insertCell(0);
+        tbstate.rows[i].cells[0].innerHTML = data['statewise'][i - 1]['state'];
+        tbstate.rows[i].cells[0].style.background = '#7a4a91';
+        tbstate.rows[i].cells[0].style.color = '#fff';
+
+        x.insertCell(1);
+        tbstate.rows[i].cells[1].innerHTML = data['statewise'][i - 1]['confirmed'];
+        tbstate.rows[i].cells[1].style.background = '#4bb7d8';
+
+        x.insertCell(2);
+        tbstate.rows[i].cells[2].innerHTML = data['statewise'][i - 1]['active'];
+        tbstate.rows[i].cells[2].style.background = '#9cc850';
+
+        x.insertCell(3);
+        tbstate.rows[i].cells[3].innerHTML = data['statewise'][i - 1]['recovered'];
+        tbstate.rows[i].cells[3].style.background = '#f36e23';
+
+        x.insertCell(4);
+        tbstate.rows[i].cells[4].innerHTML = data['statewise'][i - 1]['deaths'];
+        tbstate.rows[i].cells[4].style.background = '#4bb7d8';
+      }
+    })
+  }
+</script>
+
+</html>
